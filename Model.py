@@ -26,9 +26,9 @@ if gpus:
     # Memory growth must be set before GPUs have been initialized
     print(e)
 
-data_dir = "C:\\Users\\Caden\\Desktop\\Hands\\landmarks.csv"
+data_dir = "landmarks.csv"
 
-hands = pd.read_csv("C:\\Users\\Caden\\Desktop\\Hands\\landmarks.csv")
+hands = pd.read_csv("landmarks.csv")
 hand_features = hands.copy()
 hand_labels = hand_features.pop('actual')
 hand_features = np.array(hand_features).astype('float32')
@@ -51,4 +51,4 @@ hand_model.fit(x=hand_features, y=hand_labels, epochs=20)
 #     hand_labels = [hand_features.pop('x'),hand_features.pop('y'),hand_features.pop('z')]
 #     print(letter, file)
 
-hand_model.save('C:\\Users\\Caden\\Desktop\\Hands\\model.h6')
+hand_model.save('model.h6')
