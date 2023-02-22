@@ -20,9 +20,9 @@ f.write("\n")
 
 for letter in alphabet:
   IMAGE_FILES = []
-  for filename in glob.iglob("C:\\Users\\Caden\\Desktop\\Hands\\asl_train\\{}\\".format(letter) + '*.png', recursive=True):
+  for filename in glob.iglob("asl_train\\{}\\".format(letter) + '*.png', recursive=True):
     IMAGE_FILES.append(filename)
-  for filename in glob.iglob("C:\\Users\\Caden\\Desktop\\Hands\\asl_train\\{}\\".format(letter) + '*.jpg', recursive=True):
+  for filename in glob.iglob("asl_train\\{}\\".format(letter) + '*.jpg', recursive=True):
     IMAGE_FILES.append(filename)
   with mp_hands.Hands(
       static_image_mode=True,
