@@ -9,7 +9,7 @@ import pathlib
 import mediapipe as mp
 import math
 
-model = models.load_model('\\model.h5')
+model = models.load_model('model.h5')
 guesses = ['A','B','C','D','E','F','G','H','I','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y']
 
 mp_drawing = mp.solutions.drawing_utils
@@ -20,7 +20,7 @@ mp_hands = mp.solutions.hands
 def predict_image():
     url = "https://www.signingsavvy.com/images/words/alphabet/2/u1.jpg"
     path = tf.keras.utils.get_file('u', url)
-    path = "C:\\Users\\Caden\\Desktop\\asl_test\\S_test.jpg"
+    path = "asl_test\\S_test.jpg"
     with mp_hands.Hands(
         static_image_mode=True,
         max_num_hands=1,
