@@ -9,7 +9,7 @@ import pathlib
 import mediapipe as mp
 import math
 
-model = models.load_model('C:\\Users\\Caden\\Desktop\\DS440\\HandPoseGame\\model.h5')
+model = models.load_model('\\model.h5')
 guesses = ['A','B','C','D','E','F','G','H','I','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y']
 
 mp_drawing = mp.solutions.drawing_utils
@@ -51,7 +51,7 @@ def predict_image():
 def live_prediction():
     cap = cv2.VideoCapture(0)
     while cap.isOpened():
-        path2 = "C:\\Users\\Caden\\Desktop\\DS440\\HandPoseGame\\asl_result\\"
+        path2 = "asl_result\\"
         _, frame = cap.read()
         with mp_hands.Hands(
             static_image_mode=False,
