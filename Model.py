@@ -45,8 +45,8 @@ hand_model.compile(loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logit
 hand_model.fit(x=hand_features, y=hand_labels, epochs=20)
 
 # for letter in alphabet:
-#   for file in os.listdir("C:\\Users\\Caden\\Desktop\\Hands\\{}".format(letter)):
-#     hand = pd.read_csv("C:\\Users\\Caden\\Desktop\\Hands\\{}\\{}".format(letter,file))
+#   for file in os.listdir("{}".format(letter)):
+#     hand = pd.read_csv("{}\\{}".format(letter,file))
 #     hand_features = hand.copy()
 #     hand_labels = [hand_features.pop('x'),hand_features.pop('y'),hand_features.pop('z')]
 #     print(letter, file)
