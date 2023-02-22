@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Ignore image folders
+/asl_alphabet_train
+/asl_alphabet_test
+
 # C extensions
 *.so
 
@@ -127,3 +131,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+

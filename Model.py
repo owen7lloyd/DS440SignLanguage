@@ -51,4 +51,4 @@ hand_model.fit(x=hand_features, y=hand_labels, epochs=20)
 #     hand_labels = [hand_features.pop('x'),hand_features.pop('y'),hand_features.pop('z')]
 #     print(letter, file)
 
-hand_model.save('model.h6')
+hand_model.save('model.h5')

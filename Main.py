@@ -51,7 +51,7 @@ def predict_image():
 def live_prediction():
     cap = cv2.VideoCapture(0)
     while cap.isOpened():
-        path2 = "asl_result\\"
+        path2 = "asl_alphabet_test\\"
         _, frame = cap.read()
         with mp_hands.Hands(
             static_image_mode=False,
@@ -87,5 +87,6 @@ def live_prediction():
     cap.release()
     cv2.destroyAllWindows()
 
+live_prediction()
 
 #accuracy: 0.9532
