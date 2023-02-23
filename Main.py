@@ -9,6 +9,8 @@ import pathlib
 import mediapipe as mp
 import math
 
+# Runs real-time ASL prediction
+
 model = models.load_model('model.h5')
 guesses = ['A','B','C','D','E','F','G','H','I','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y']
 

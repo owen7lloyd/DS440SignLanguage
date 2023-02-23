@@ -4,6 +4,8 @@ import mediapipe as mp
 import glob
 import math
 
+# Generates landmarks.csv file for use in Model.py
+
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands

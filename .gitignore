@@ -5,7 +5,6 @@ __pycache__/
 
 # Ignore image folders
 /asl_alphabet_train
-/asl_alphabet_test
 
 # C extensions
 *.so
