@@ -8,11 +8,9 @@ import tensorflow as tf
 import pathlib
 import mediapipe as mp
 import math
+import time
 
 # Runs real-time ASL prediction
-
-model = models.load_model('model.h5')
-guesses = ['A','B','C','D','E','F','G','H','I','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y']
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -20,9 +18,11 @@ mp_hands = mp.solutions.hands
 
 # Used for single image prediction #
 def predict_image():
-    url = "https://www.signingsavvy.com/images/words/alphabet/2/u1.jpg"
-    path = tf.keras.utils.get_file('u', url)
-    path = "asl_test\\S_test.jpg"
+    model = models.load_model('model.h5')
+    guesses = ['A','B','C','D','E','F','G','H','I','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y'] 
+  #  url = "https://www.signingsavvy.com/images/words/alphabet/2/u1.jpg"
+  #  path = tf.keras.utils.get_file('u', url)
+    path = "asl_alphabet_test\\S_test.jpg"
     with mp_hands.Hands(
         static_image_mode=True,
         max_num_hands=1,
@@ -43,14 +43,19 @@ def predict_image():
     predictions = model.predict(result)
     score = tf.nn.softmax(predictions[0])
     scores = list(zip(guesses, list(predictions[0])))
-    print(scores)
+    pred_list = []
+    for tup in scores:
+        pred_list += [tup[1]]
+    confidence = max(pred_list) * 100
 
     print("This image most likely belongs to {} with a {:.2f} percent confidence."
-        .format(guesses[np.argmax(score)], 100 * np.max(score))
+        .format(guesses[np.argmax(score)], confidence)
     )
 
-# Used for webcam prediction #
+# Used for webcam prediction (alphabet_only)
 def live_prediction():
+    model = models.load_model('model.h5')
+    guesses = ['A','B','C','D','E','F','G','H','I','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y']
     cap = cv2.VideoCapture(0)
     while cap.isOpened():
         path2 = "asl_alphabet_test\\"
@@ -89,6 +94,46 @@ def live_prediction():
     cap.release()
     cv2.destroyAllWindows()
 
-live_prediction()
+def live_prediction_video_model():
+    model = models.load_model('model2.h5')
+    cap = cv2.VideoCapture(0)
+    while cap.isOpened():
+        words = []
+        for name in os.listdir("dataset\\SL"):
+            words.append(name)
+        _, frame = cap.read()
+        with mp_hands.Hands(
+            static_image_mode=False,
+            max_num_hands=1,
+            min_detection_confidence=0.5) as hands:
+            frame=cv2.flip(frame, 1)
+            results = hands.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
 
-#accuracy: 0.9532
+        cv2.imshow("Capturing", frame)
+        result = []
+        landmarks = []
+        if results.multi_hand_landmarks:
+            for hand_landmarks in results.multi_hand_landmarks:
+                for landmark in hand_landmarks.landmark:
+                    landmarks.append((landmark.x, landmark.y))
+            for i in range(0, 21):
+                for j in range(1,21):
+                    if j > i:
+                        result.append(math.sqrt( (landmarks[i][0] - landmarks[j][0])**2 + (landmarks[i][1] - landmarks[j][1])**2 ))
+            result = np.array([result])
+
+            predictions = model.predict(result)
+            score = tf.nn.softmax(predictions[0])
+            p = words[np.argmax(score)]
+            print(p)
+            time.sleep(.5)
+        else:
+            print("Nothing")
+            time.sleep(.5)
+        key=cv2.waitKey(1)
+        if key == ord('q'):
+                break
+    cap.release()
+    cv2.destroyAllWindows()
+
+predict_image()
