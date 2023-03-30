@@ -1,15 +1,12 @@
 import os
-os.add_dll_directory("C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.1/bin")
 import cv2
 import numpy as np
 from PIL import Image
 from keras import models
 import tensorflow as tf
-import pathlib
 import mediapipe as mp
 import math
-import time
-import Video
+from Video import find_hand_period
 
 # Runs real-time ASL prediction
 
@@ -56,7 +53,7 @@ def predict_image():
 def predict_video(video):
     model = models.load_model('Models\\model2.h5')
     words = []
-    for name in os.listdir("dataset\\SL"):
+    for name in os.listdir("alphabet_video"):
         words.append(name)
     result = []
     vid = cv2.VideoCapture(video)
@@ -65,7 +62,7 @@ def predict_video(video):
         frame_id = 0
         collected_frames = 0
 
-        start, end = Video.find_hand_period(video)
+        start, end = find_hand_period(video)
         mesh_dur = end - start
         frame_skip = mesh_dur / 4
         frame_id += start
@@ -88,6 +85,8 @@ def predict_video(video):
                         for j in range(1, 21):
                             if j > i:
                                 result.append(math.sqrt( (landmarks[i][0] - landmarks[j][0])**2 + (landmarks[i][1] - landmarks[j][1])**2 ))
+                                result.append(math.atan( abs(landmarks[i][0] - landmarks[j][0]) / abs(landmarks[i][1] - landmarks[j][1])))
+
                     collected_frames += 1
                     frame_id += frame_skip
             vid.release()
@@ -101,7 +100,7 @@ def predict_video(video):
         pred_list += [tup[1]]
     confidence = max(pred_list) * 100
 
-    print("This video most likely portrays \"{}\" with a {:.2f} percent confidence."
+    print("This video most likely portrays \"{}\" with a {:.2f}% confidence."
         .format(words[np.argmax(score)], confidence)
     )
 
@@ -147,53 +146,4 @@ def live_prediction():
     cap.release()
     cv2.destroyAllWindows()
 
-## Probably going to remove this function ##
-
-# def live_prediction_video_model():
-#     model = models.load_model('Models\\model2.h5')
-#     cap = cv2.VideoCapture(0)
-#     while cap.isOpened():
-#         words = []
-#         for name in os.listdir("dataset\\SL"):
-#             words.append(name)
-#         _, frame = cap.read()
-#         with mp_hands.Hands(
-#             static_image_mode=False,
-#             max_num_hands=1,
-#             min_detection_confidence=0.5) as hands:
-#             frame=cv2.flip(frame, 1)
-#             results = hands.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-
-#         cv2.imshow("Capturing", frame)
-#         result = []
-#         landmarks = []
-#         if results.multi_hand_landmarks:
-#             counter = 0
-#             while counter <= 3:
-#                 for hand_landmarks in results.multi_hand_landmarks:
-#                     for landmark in hand_landmarks.landmark:
-#                         landmarks.append((landmark.x, landmark.y))
-#                     time.sleep(0.5)
-#                     counter += 1
-
-#             for i in range(0, 21):
-#                 for j in range(1,21):
-#                     if j > i:
-#                         result.append(math.sqrt( (landmarks[i][0] - landmarks[j][0])**2 + (landmarks[i][1] - landmarks[j][1])**2 ))
-#             result = np.array([result])
-
-#             predictions = model.predict(result)
-#             score = tf.nn.softmax(predictions[0])
-#             p = words[np.argmax(score)]
-#             print(p)
-#             time.sleep(.5)
-#         else:
-#             print("Nothing")
-#             time.sleep(.5)
-#         key=cv2.waitKey(1)
-#         if key == ord('q'):
-#                 break
-#     cap.release()
-#     cv2.destroyAllWindows()
-
-predict_video("test3.mp4")
+predict_video("test2.mp4")
