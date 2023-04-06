@@ -50,13 +50,13 @@ def find_hand_period(path):
 
 def get_word_list():
   words = []
-  for name in os.listdir("alphabet_video"):
+  for name in os.listdir("data_sample"):
       words.append(name)
   return words
 
 def get_paths(word):
   paths = []
-  for filename in os.listdir("alphabet_video\\{}".format(word)):
+  for filename in os.listdir("data_sample\\{}".format(word)):
     paths.append(filename)
   return paths
 
@@ -75,7 +75,8 @@ def videos_to_csv(word_list):
 
 
   for word in word_list:
-    print(word)
+    percent = round( (word_list.index(word) / len(word_list) ) * 100, 2)
+    print("Progress: {}%".format(percent))
     paths = get_paths(word)
     # Add all file paths to list
     with mp_hands.Hands(
@@ -84,8 +85,7 @@ def videos_to_csv(word_list):
         min_detection_confidence=0.5) as hands:
 
       for idx, file in enumerate(paths):
-        print(file)
-        path = "alphabet_video\\{}\\".format(word) + file
+        path = "data_sample\\{}\\".format(word) + file
         video = cv2.VideoCapture(path)
         while video.isOpened():
           frame_id = 0
@@ -107,7 +107,7 @@ def videos_to_csv(word_list):
               results = hands.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
               if not results.multi_hand_landmarks:
                 frame_id += 1    # Skip to next frame if hands are not present
-              else: 
+              else:
                 landmarks = []
                 for landmark in results.multi_hand_landmarks[0].landmark: # Add x,y coords of hand mesh points to list as tuples
                   landmarks.append([landmark.x, landmark.y]) 
@@ -115,20 +115,16 @@ def videos_to_csv(word_list):
                 f.write(str(word_list.index(word)) + ",")      
                 # Write to file the index of the word as a classifier followed by distance calcs
                 for i in range(0, 21):
+                  difference = [math.sqrt( (landmarks[i][0] - x[0])**2 + (landmarks[i][1] - x[1])**2 ) for x in prev_landmarks]
+                  if prev_landmarks != []:
+                          for dif in difference:
+                            f.write(str(dif) + ",")
                   for j in range(1, 21):
                     distance = math.sqrt( (landmarks[i][0] - landmarks[j][0])**2 + (landmarks[i][1] - landmarks[j][1])**2 )
                     if j > i:
                       if i == 19:
-                        if prev_landmarks != []:
-                          difference = [math.sqrt( (landmarks[i][0] - x[0])**2 + (landmarks[i][1] - x[1])**2 ) for x in prev_landmarks]
-                          for dif in difference:
-                            f.write(str(dif) + ",")
                         f.write( str(distance))
                       else:
-                        if prev_landmarks != []:
-                          difference = [math.sqrt( (landmarks[i][0] - x[0])**2 + (landmarks[i][1] - x[1])**2 ) for x in prev_landmarks]
-                          for dif in difference:
-                            f.write(str(dif) + ",")
                         f.write( str(distance) + "," )
                 collected_frames += 1
                 frame_id += frame_skip
@@ -138,5 +134,5 @@ def videos_to_csv(word_list):
   f.close()
 
 # Need commented out if running Main.py otherwise this will run when Main does
-# word_list = get_word_list()
-# videos_to_csv(word_list)
+word_list = get_word_list()
+videos_to_csv(word_list)

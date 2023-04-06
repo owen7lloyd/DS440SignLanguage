@@ -17,9 +17,9 @@ def generate_model():
   normalize.adapt(hand_features)
 
   hand_model = tf.keras.Sequential([
+        keras.layers.Dense(1000),
         keras.layers.Dense(500),
-        keras.layers.Dense(250),
-        keras.layers.Dense(100),
+        keras.layers.Dense(200),
         keras.layers.Dense(19, activation='softmax') # Must equal number of items being classified
         ])
   hand_model.compile(loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False), optimizer = 'adam',  metrics=['accuracy'])

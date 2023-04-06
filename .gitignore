@@ -5,6 +5,10 @@ __pycache__/
 
 # Ignore image folders
 /asl_alphabet_train
+*.mp4
+*.csv
+/dataset
+
 
 # C extensions
 *.so
