@@ -50,6 +50,61 @@ def predict_image():
         .format(guesses[np.argmax(score)], confidence)
     )
 
+def predict_video_mac(video):
+    model = models.load_model('Models/model2.h5')
+    words = []
+    for name in os.listdir("data_sample"):
+        words.append(name)
+    result = []
+    vid = cv2.VideoCapture(video)
+
+    while vid.isOpened():
+        frame_id = 0
+        collected_frames = 0
+
+        start, end = find_hand_period(video)
+        mesh_dur = end - start
+        frame_skip = mesh_dur / 4
+        frame_id += start
+
+        with mp_hands.Hands(
+        static_image_mode=True,
+        max_num_hands=1,
+        min_detection_confidence=0.5) as hands:
+            while collected_frames < 4:
+                vid.set(cv2.CAP_PROP_POS_FRAMES, frame_id)
+                _, frame = vid.read()
+                results = hands.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+                if not results.multi_hand_landmarks:
+                    frame_id += 1
+                else: 
+                    landmarks = []
+                    for landmark in results.multi_hand_landmarks[0].landmark:
+                        landmarks.append([landmark.x, landmark.y])
+                    for i in range(0, 21):
+                        for j in range(1, 21):
+                            if j > i:
+                                result.append(math.sqrt( (landmarks[i][0] - landmarks[j][0])**2 + (landmarks[i][1] - landmarks[j][1])**2 ))
+                                result.append(math.atan( abs(landmarks[i][0] - landmarks[j][0]) / abs(landmarks[i][1] - landmarks[j][1])))
+
+                    collected_frames += 1
+                    frame_id += frame_skip
+            vid.release()
+
+    result = np.array([result])
+    predictions = model.predict(result)
+    score = tf.nn.softmax(predictions[0])
+    scores = list(zip(words, list(predictions[0])))
+    pred_list = []
+    for tup in scores:
+        pred_list += [tup[1]]
+    confidence = max(pred_list) * 100
+
+    print("This video most likely portrays \"{}\" with a {:.2f}% confidence."
+        .format(words[np.argmax(score)], confidence)
+    )
+    return words[np.argmax(score)]
+
 def predict_video(video):
     model = models.load_model('Models\\model2.h5')
     words = []
@@ -146,4 +201,4 @@ def live_prediction():
     cap.release()
     cv2.destroyAllWindows()
 
-predict_video("test2.mp4")
+# predict_video("test2.mp4")

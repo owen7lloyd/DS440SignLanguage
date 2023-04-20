@@ -3,6 +3,7 @@ import sys
 import os
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
 from PyQt5.QtWidgets import QFileDialog
+from Main import predict_video_mac
 
 class Ui(QtWidgets.QMainWindow):
     def __init__(self):
@@ -64,12 +65,13 @@ class Ui(QtWidgets.QMainWindow):
             self.video_writer.write(frame)
 
     def run_model(self, video_file_name):
-        # Replace this with your actual model implementation
-        return "Placeholder Prediction"
+        result = predict_video_mac(video_file_name)
+        return result
 
     def closeEvent(self, event):
         self.capture.release()
         event.accept()
+
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

@@ -134,5 +134,5 @@ def videos_to_csv(word_list):
   f.close()
 
 # Need commented out if running Main.py otherwise this will run when Main does
-word_list = get_word_list()
-videos_to_csv(word_list)
+# word_list = get_word_list()
+# videos_to_csv(word_list)
