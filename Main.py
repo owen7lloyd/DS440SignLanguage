@@ -108,46 +108,50 @@ def predict_image():
     )
 
 def predict_video_mac(video):
-    model = models.load_model('Models/model2.h5')
+    model = models.load_model('Models/Alphabet.h5')
     words = []
+    
     for name in os.listdir("alphabet_video"):
         words.append(name)
-    result = []
-    vid = cv2.VideoCapture(video)
-
-    while vid.isOpened():
-        frame_id = 0
-        collected_frames = 0
-
-        start, end = find_hand_period(video)
-        mesh_dur = end - start
-        frame_skip = mesh_dur / 4
-        frame_id += start
-
-        with mp_hands.Hands(
+    with mp_hands.Hands(
         static_image_mode=True,
         max_num_hands=1,
         min_detection_confidence=0.5) as hands:
-            while collected_frames < 4:
-                vid.set(cv2.CAP_PROP_POS_FRAMES, frame_id)
-                _, frame = vid.read()
-                results = hands.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-                if not results.multi_hand_landmarks:
-                    frame_id += 1
-                else: 
-                    landmarks = []
-                    for landmark in results.multi_hand_landmarks[0].landmark:
-                        landmarks.append([landmark.x, landmark.y])
-                    if collected_frames == 0:
-                        result += [landmarks[3][0], landmarks[3][1], landmarks[7][0], landmarks[7][1]]
-                    for i in range(0, 21):
-                        for j in range(1, 21):
-                            distance = math.sqrt( (landmarks[i][0] - landmarks[j][0])**2 + (landmarks[i][1] - landmarks[j][1])**2 )
-                            if j > i:
-                                result.append(distance)
-                    collected_frames += 1
-                    frame_id += frame_skip
-            vid.release()
+        vid = cv2.VideoCapture(video)
+
+        while vid.isOpened():
+            frame_id = 0
+            collected_frames = 0
+            start, end = find_hand_period(video)
+            mesh_dur = end - start
+            frame_skip = mesh_dur / 4
+            frame_id += start
+
+            if start == None and end == None:
+              continue
+            else:
+                while collected_frames < 4:
+
+                    vid.set(cv2.CAP_PROP_POS_FRAMES, frame_id)
+                    _, frame = vid.read()
+                    results = hands.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+                    if not results.multi_hand_landmarks:
+                        frame_id += 1
+                    else: 
+                        landmarks = []
+                        for landmark in results.multi_hand_landmarks[0].landmark:
+                            landmarks.append([landmark.x, landmark.y])
+
+                        if collected_frames == 0:
+                            result += [landmarks[3][0], landmarks[3][1], landmarks[7][0], landmarks[7][1]]
+                        for i in range(0, 21):
+                            for j in range(1, 21):
+                                distance = math.sqrt( (landmarks[i][0] - landmarks[j][0])**2 + (landmarks[i][1] - landmarks[j][1])**2 )
+                                if j > i:
+                                    result.append(distance)
+                        collected_frames += 1
+                        frame_id += frame_skip
+                vid.release()
 
     result = np.array([result])
     predictions = model.predict(result)
@@ -164,7 +168,7 @@ def predict_video_mac(video):
     return words[np.argmax(score)]
 
 def predict_video(video):
-    model = models.load_model('Models\\model2.h5')
+    model = models.load_model('Models\\Alphabet.h5')
     words = []
     result = []
 
@@ -266,4 +270,4 @@ def live_prediction():
     cap.release()
     cv2.destroyAllWindows()
 
-predict_video("alphabet_video\\j\\31102.mp4")
+# predict_video("recordings\\e.mp4")
