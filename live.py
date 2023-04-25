@@ -3,7 +3,7 @@ import sys
 import os
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
 from PyQt5.QtWidgets import QFileDialog
-from Main import predict_video_mac
+from Main import predict_video_mac, predict_video
 
 class Ui(QtWidgets.QMainWindow):
     def __init__(self):
@@ -65,7 +65,8 @@ class Ui(QtWidgets.QMainWindow):
             self.video_writer.write(frame)
 
     def run_model(self, video_file_name):
-        result = predict_video_mac(video_file_name)
+        result = predict_video_mac(video_file_name) # Mac
+        # result = predict_video(video_file_name) # Windows
         return result
 
     def closeEvent(self, event):
@@ -77,3 +78,5 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     window = Ui()
     sys.exit(app.exec_())
+
+# A, B, D, E, F, G, H, I, J, K, M, N, O, P, Q, R, S, T
